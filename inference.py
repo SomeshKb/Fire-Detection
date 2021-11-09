@@ -39,10 +39,38 @@ def predictImage(path,model):
     prediction, prob = predict(img,model)
     print(prediction, prob)
 
+def predictVideo(videoFile,model):
+    cap = cv2.VideoCapture(videoFile)
+
+    while True:
+
+        ret, image = cap.read()
+        draw = image.copy()
+        draw = cv2.resize(draw,(640,480))
+
+        draw = transforms.ToPILImage()(draw)
+        prediction, prob = predict(draw,model)
+
+        print(prediction)
+
+        if prediction == 'Neutral':
+            color = (0, 255, 0)
+        else:
+            color = (0, 0, 255)
+        cv2.putText(image, (prediction+' '+str(prob)), (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+
+
+        cv2.imshow('framename', image)
+
+        if cv2.waitKey(25) & 0xFF == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 model = loadModel()
 
-predictImage('images/test1.jpg',model)
+predictVideo('crop-buring.mp4',model)
 
 
 
